@@ -10,12 +10,15 @@ import React, { useState } from "react"
 import login from "../../../images/login.png"
 import TextField from "@mui/material/TextField"
 import { Box } from "@mui/system"
-import { NavLink } from "react-router-dom"
+import { NavLink, useLocation, useHistory } from "react-router-dom"
 import useAuth from "../../../hooks/useAuth"
 
 const Login = () => {
   const [loginData, setLoginData] = useState({})
   const { user, loginUser, isLoading, authError } = useAuth()
+
+  const location = useLocation()
+  const history = useHistory()
 
   // onchange
   const handleOnChange = (e) => {
@@ -30,7 +33,7 @@ const Login = () => {
   //   handle Submit
   const handleSubmit = (e) => {
     // alert("Lgoed In ")
-    loginUser(loginData.email, loginData.password)
+    loginUser(loginData.email, loginData.password, location, history)
     e.preventDefault()
   }
   return (

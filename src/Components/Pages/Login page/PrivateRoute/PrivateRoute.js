@@ -8,6 +8,7 @@ const PrivateRoute = ({ children, ...rest }) => {
   if (isLoading) {
     return <CircularProgress />
   }
+
   return (
     <Route
       {...rest}
