@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useState } from "react"
 import Box from "@mui/material/Box"
 import Button from "@mui/material/Button"
 import Typography from "@mui/material/Typography"
@@ -18,16 +18,42 @@ const style = {
   p: 4
 }
 
-const BookingModal = ({ openBooking, date, handleBookingClose, booking }) => {
+const BookingModal = ({ openBooking, handleBookingClose, booking, date }) => {
   const { name, time } = booking
   const { user } = useAuth()
 
+  const initialInfo = {
+    patientName: user.displayName,
+    emai: user.email,
+    phone: "",
+    date: ""
+  }
+  const [bookingInfo, setBookingInfo] = useState(initialInfo)
+
+  const handleOnBlur = (e) => {
+    const field = e.target.name
+    const value = e.target.value
+
+    const newInfo = { ...bookingInfo }
+    newInfo[field] = value
+    // console.log(newInfo)
+    setBookingInfo(newInfo)
+  }
+
   // submit handler //
   const handleBookSubmit = (e) => {
-    alert("SUBMITTED !!")
-
-    // collect data from the form & send to the database
     e.preventDefault()
+    // collect data from the form
+    const appointment = {
+      ...bookingInfo,
+      time,
+      serviceName: name,
+      date: date.toLocaleDateString()
+    }
+    console.log(appointment)
+
+    //send to the database
+
     handleBookingClose()
   }
   return (
@@ -45,15 +71,9 @@ const BookingModal = ({ openBooking, date, handleBookingClose, booking }) => {
             component="h2">
             {name}
           </Typography>
-          <Box
-            component="form"
-            onSubmit={handleBookSubmit}
-            sx={{
-              "& > :not(style)": { m: 1, width: "90%" }
-            }}
-            noValidate
-            autoComplete="off">
+          <form onSubmit={handleBookSubmit}>
             <TextField
+              sx={{ width: "90%", margin: 1 }}
               disabled
               id="filled-basic"
               label="Time"
@@ -61,34 +81,51 @@ const BookingModal = ({ openBooking, date, handleBookingClose, booking }) => {
               defaultValue={time}
             />
             <TextField
+              sx={{ width: "90%", margin: 1 }}
               id="filled-basic"
               label="Name"
+              onBlur={handleOnBlur}
               variant="filled"
+              name="patientName"
               defaultValue={user.displayName}
             />
             <TextField
+              sx={{ width: "90%", margin: 1 }}
               id="filled-basic"
               label="Email"
+              onBlur={handleOnBlur}
               variant="filled"
+              name="email"
               defaultValue={user.email}
             />
             <TextField
+              sx={{ width: "90%", margin: 1 }}
               id="filled-basic"
               label="Phone"
+              onBlur={handleOnBlur}
+              name="phone"
               variant="filled"
               type="number"
             />
             <TextField
+              sx={{ width: "90%", margin: 1 }}
               // disabled
               id="filled-basic"
+              onBlur={handleOnBlur}
               variant="filled"
               type="date"
+              name="date"
               defaultValue={date.toDateString()}
+              required
             />
-            <Button type="sumbit" variant="contained">
+
+            <Button
+              sx={{ width: "90%", margin: 1 }}
+              type="sumbit"
+              variant="contained">
               Submit
             </Button>
-          </Box>
+          </form>
         </Box>
       </Modal>
     </div>
