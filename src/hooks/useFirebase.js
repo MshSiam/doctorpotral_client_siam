@@ -5,7 +5,10 @@ import {
   getAuth,
   signOut,
   onAuthStateChanged,
-  signInWithEmailAndPassword
+  signInWithEmailAndPassword,
+  GoogleAuthProvider,
+  signInWithPopup,
+  updateProfile
 } from "firebase/auth"
 
 initializeFirebase()
@@ -14,24 +17,50 @@ const useFirebase = () => {
   const [isLoading, setIsLoading] = useState(true)
   const [authError, setAuthError] = useState()
 
-  //   email, password
   const auth = getAuth()
-  const registerUser = (email, password) => {
+  const googleProvider = new GoogleAuthProvider()
+
+  //   email, password
+
+  const registerUser = (email, password, history, name) => {
     setIsLoading(true)
     createUserWithEmailAndPassword(auth, email, password)
       .then((result) => {
         setAuthError("")
 
-        const user = result.user
+        const newUser = { email, displayName: name }
+        setUser(newUser)
+        // sending name to firebase after creation
+        // Update Profile //
+        updateProfile(auth.currentUser, {
+          displayName: name
+        })
+          .then(() => {})
+          .catch((error) => {})
+
+        history.replace("/")
       })
       .catch((error) => {
-        const errorCode = error.code
         setAuthError(error.message)
         console.log(error)
       })
       .finally(() => {
         setIsLoading(false)
       })
+  }
+  // sign in with google
+  const signInWithGoogle = (location, history) => {
+    setIsLoading(true)
+    signInWithPopup(auth, googleProvider)
+      .then((result) => {
+        setAuthError("")
+        const user = result.users
+      })
+      .catch((error) => {
+        const errorCode = error.code
+        setAuthError(error.message)
+      })
+      .finally(() => setIsLoading(false))
   }
 
   //   onAuthChange
@@ -82,7 +111,8 @@ const useFirebase = () => {
     logOut,
     loginUser,
     isLoading,
-    authError
+    authError,
+    signInWithGoogle
   }
 }
 

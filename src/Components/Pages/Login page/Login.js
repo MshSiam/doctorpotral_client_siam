@@ -15,7 +15,7 @@ import useAuth from "../../../hooks/useAuth"
 
 const Login = () => {
   const [loginData, setLoginData] = useState({})
-  const { user, loginUser, isLoading, authError } = useAuth()
+  const { user, loginUser, isLoading, authError, signInWithGoogle } = useAuth()
 
   const location = useLocation()
   const history = useHistory()
@@ -35,6 +35,11 @@ const Login = () => {
     // alert("Lgoed In ")
     loginUser(loginData.email, loginData.password, location, history)
     e.preventDefault()
+  }
+
+  // handleGoogleSignIn
+  const handleGoogleSignIn = () => {
+    signInWithGoogle(location, history)
   }
   return (
     <Container>
@@ -56,7 +61,7 @@ const Login = () => {
               id="standard-basic"
               label="Your Email"
               name="email"
-              onChange={handleOnChange}
+              onBlur={handleOnChange}
               variant="standard"
               type="email"
             />
@@ -66,12 +71,13 @@ const Login = () => {
               label="Your Password"
               type="password"
               name="password"
-              onChange={handleOnChange}
+              onBlur={handleOnChange}
               variant="standard"
             />
 
             <br />
             {isLoading && <CircularProgress />}
+            <br />
             {user?.email && (
               <Alert
                 style={{
@@ -91,8 +97,10 @@ const Login = () => {
               variant="contained">
               Login
             </Button>
-            <h3>Or</h3>
-            <Button variant="contained">SignIn With Google</Button>
+            <Typography variant="h6">-- Or --</Typography>
+            <Button onClick={handleGoogleSignIn} variant="contained">
+              SignIn With Google
+            </Button>
             {/* </Box> */}
           </form>
           <br />
